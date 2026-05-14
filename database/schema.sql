@@ -101,10 +101,10 @@ END;
 DELIMITER ;
 
 -- Optional: Seed data
-INSERT INTO Category (category_name) VALUES ('Electronics'), ('Books'), ('Clothing');
+INSERT INTO Category (category_name) VALUES ('AI'), ('Database'), ('WEB');
 
 INSERT INTO Product (name, description, price, stock_quantity, category_id) VALUES 
-('Smartphone', 'Latest model smartphone with high res camera', 699.00, 50, 1),
-('Laptop', 'High performance laptop for gaming', 1200.00, 20, 1),
-('Novel', 'Best selling mystery novel', 15.00, 100, 2),
-('T-Shirt', 'Cotton t-shirt', 20.00, 200, 3);
+('AI 與資料素養進階應用', '針對(適合)非資訊相關科系的學生們學習深度學習入門知識', 500.00, 50, 1),
+('網頁自動化測試入門', '對程式設計，軟體開發具興趣的同學（不分領域）。
+對軟體需求分析有興趣的同學（不分領域）。', 1200.00, 20, 2),
+('程式開發協作夥伴 - GitHub Copilot', 150.00, 100, 1)
