@@ -67,30 +67,40 @@ class TabOrders(QWidget):
                 self.table.setItem(row_idx, 3, status_item)
                 
                 # 處理第五欄的「操作」或「備註」
-                if status == 'PENDING' and not reason:
-                    # 允許申請取消
-                    action_widget = QWidget()
-                    action_layout = QVBoxLayout(action_widget)
-                    action_layout.setContentsMargins(5, 4, 5, 4)
-                    action_layout.setAlignment(Qt.AlignCenter)
-                    
-                    # 若曾被駁回，顯示駁回緣由
-                    if rej_reason:
-                        lbl_rej = QLabel(f"駁回緣由: {rej_reason}")
-                        lbl_rej.setStyleSheet("color: #e74c3c; font-size: 12px;")
-                        action_layout.addWidget(lbl_rej)
+                if status == 'PENDING':
+                    if not reason:
+                        # 情況 1：待處理且「尚未」申請取消 -> 顯示按鈕
+                        action_widget = QWidget()
+                        action_layout = QVBoxLayout(action_widget)
+                        action_layout.setContentsMargins(5, 4, 5, 4)
+                        action_layout.setAlignment(Qt.AlignCenter)
                         
-                    btn_cancel = QPushButton("申請取消")
-                    btn_cancel.setStyleSheet("background-color: #e74c3c; color: white; border-radius: 4px; padding: 6px 12px; font-weight: bold;")
-                    btn_cancel.clicked.connect(lambda checked, oid=o_id: self.request_cancel(oid))
-                    
-                    action_layout.addWidget(btn_cancel)
-                    self.table.setCellWidget(row_idx, 4, action_widget)
-                elif status == 'PENDING' and reason:
-                    # 取消申請中
-                    self.table.setItem(row_idx, 4, QTableWidgetItem(f"原因: {reason}"))
+                        # 保留這段：若曾被駁回，顯示駁回緣由
+                        if rej_reason:
+                            lbl_rej = QLabel(f"駁回緣由: {rej_reason}")
+                            lbl_rej.setStyleSheet("color: #e74c3c; font-size: 12px;")
+                            action_layout.addWidget(lbl_rej)
+                            
+                        btn_cancel = QPushButton("申請取消")
+                        btn_cancel.setStyleSheet("background-color: #e74c3c; color: white; border-radius: 4px; padding: 6px 12px; font-weight: bold;")
+                        btn_cancel.clicked.connect(lambda checked, oid=o_id: self.request_cancel(oid))
+                        
+                        action_layout.addWidget(btn_cancel)
+                        self.table.setCellWidget(row_idx, 4, action_widget)
+                    else:
+                        # 情況 2：待處理且「取消申請中」 -> 移除按鈕，僅顯示原因
+                        reason_item = QTableWidgetItem(f"原因: {reason}")
+                        self.table.setItem(row_idx, 4, reason_item)
+                
+                elif status == 'COMPLETED':
+                    # 情況 3：已完成訂單 -> 僅顯示駁回緣由文字，不顯示按鈕
+                    if rej_reason:
+                        self.table.setItem(row_idx, 4, QTableWidgetItem(f"駁回緣由: {rej_reason}"))
+                    else:
+                        self.table.setItem(row_idx, 4, QTableWidgetItem(""))
+
                 elif status == 'CANCELLED':
-                    # 已取消訂單不顯示按鈕，只顯示備註
+                    # 情況 4：已取消訂單 -> 顯示取消原因
                     reason_text = f"原因: {reason}" if reason else "已取消"
                     self.table.setItem(row_idx, 4, QTableWidgetItem(reason_text))
                 else:
